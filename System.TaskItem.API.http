@@ -1,0 +1,6 @@
+@System.TaskItem.API_HostAddress = http://localhost:5095
+
+GET {{System.TaskItem.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

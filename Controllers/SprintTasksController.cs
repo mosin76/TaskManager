@@ -10,7 +10,7 @@ namespace System.TaskItem.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
+    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
     public class SprintTasksController : ControllerBase
     {
         private readonly ITaskManager _context;
@@ -22,10 +22,9 @@ namespace System.TaskItem.API.Controllers
 
         // GET: api/SprintTasks
         [HttpGet]
-        [Authorize]
+        
         public async Task<ActionResult<IEnumerable<SprintTask>>> GetSprintTask()
         {
-            //return await _context.SprintTask.ToListAsync();
             return await _context.GetAllTaskAsync();
         }
 

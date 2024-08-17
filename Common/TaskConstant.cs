@@ -8,6 +8,12 @@
         public const string UserCreatedSuccess = "User Created Successfully";
         public const string UserCreationFailed = "User Failed to Create";
         public const string UserEmailNotEmpty = "Email Can Not be Empty!";
+        public const string SearchTitle = "title";
+        public const string SearchDesciption = "description";
+        public const string SearchStatus = "status";
+        public const string OrderByDesc = "desc";
+        public const string OrderByAsc = "asc";
     }
-    public enum TaskStatus { ToDo = 1, InProgress, Done }
+    public enum SprintTaskStatus { ToDo = 1, InProgress, Done }
+
 }

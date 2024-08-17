@@ -1,4 +1,4 @@
-﻿
+﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,11 +21,12 @@ namespace System.TaskItem.API.Controllers
         }
 
         // GET: api/SprintTasks
-        [HttpGet]
+        [Route("task/GetTaskBySearch")]
+        [HttpPost]
         
-        public async Task<ActionResult<IEnumerable<SprintTask>>> GetSprintTask()
+        public async Task<ActionResult<SprintTaskViewModel>> GetSprintTask([Required][FromBody] TaskSearchModel taskSearchModel)
         {
-            return await _context.GetAllTaskAsync();
+            return await _context.GetAllTaskAsync(taskSearchModel);
         }
 
         // GET: api/SprintTasks/5
@@ -51,34 +52,24 @@ namespace System.TaskItem.API.Controllers
             {
                 return BadRequest();
             }
-
-           
-
-            try
-            {
+            
                 await _context.UpdateSprintTaskAsync(sprintTask);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                //if (!_context.SprintTaskExists(id))
-                //{
-                //    return NotFound();
-                //}
-                //else
-                //{
-                //    throw;
-                //}
-            }
-
-            return NoContent();
+                return NoContent();
         }
 
-        // POST: api/SprintTasks
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPost]
         public async Task<ActionResult<SprintTask>> PostSprintTask(SprintTask sprintTask)
         {
-            await _context.SaveSprintTaskAsync(sprintTask);
+            var currentUser = HttpContext.User;
+            var userid = currentUser.Claims.Where(e => e.Type == "userid");
+            if (userid!= null && userid.Count()>0)
+            {
+
+                sprintTask.UserId = userid.FirstOrDefault().Value;
+                await _context.SaveSprintTaskAsync(sprintTask);
+            }
+            
             return CreatedAtAction("GetSprintTask", new { id = sprintTask.TaskId }, sprintTask);
         }
 

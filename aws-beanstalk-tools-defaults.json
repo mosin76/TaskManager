@@ -1,0 +1,20 @@
+
+{
+    "region" : "ap-south-1",
+    "configuration" : "Debug",
+    "framework"     : "net8.0",
+    "self-contained" : true,
+    "application"    : "SystemTaskItemAPI",
+    "environment"    : "Staging",
+    "enable-xray"    : false,
+    "enhanced-health-type" : "basic",
+    "additional-options"   : "\"aws:autoscaling:launchconfiguration,SecurityGroups\"=\"sg-0ad3bd1348f7db28e\";\"aws:ec2:vpc,Subnets\"=\"subnet-0cef486e27f056b92\"",
+    "solution-stack"       : "64bit Amazon Linux 2 v2.8.1 running .NET Core",
+    "environment-type"     : "SingleInstance",
+    "cname"                : "TaskAPI-Staging",
+    "instance-type"        : "t3a.nano",
+    "key-pair"             : "Areeba",
+    "instance-profile"     : "aws-elasticbeanstalk-ec2-role",
+    "service-role"         : "aws-elasticbeanstalk-service-role",
+    "proxy-server"         : "nginx"
+}

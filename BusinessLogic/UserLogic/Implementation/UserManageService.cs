@@ -52,7 +52,7 @@ namespace TaskManagmentAPI.BusinessLogic.UserLogic.Implementation
                     {
                     new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Sid, user.Id),
+                    new Claim("userid", user.Id),
                     }),
                     Expires = DateTime.UtcNow.AddHours(1),
                     SigningCredentials = new SigningCredentials(

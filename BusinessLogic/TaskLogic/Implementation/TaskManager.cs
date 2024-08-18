@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.TaskItem.API.BusinessLogic.TaskLogic.Interface;
+using System.TaskItem.API.Model;
 using System.TaskItem.API.Model.ApplicationModel;
 using TaskManagmentAPI.SystemLogic.TaskItem.Interface;
 
@@ -12,9 +13,9 @@ namespace System.TaskItem.API.BusinessLogic.TaskLogic.Implementation
         {
             _taskItemService = taskItemService;
         }
-        public async Task<List<SprintTask>> GetAllTaskAsync()
+        public async Task<SprintTaskViewModel> GetAllTaskAsync(TaskSearchModel taskSearchModel)
         {
-            return await _taskItemService.GetAllTaskAsync();
+            return await _taskItemService.GetAllTaskAsync(taskSearchModel);
         }
         public async Task<SprintTask?> GetTaskByIdAsync(int id)
         {

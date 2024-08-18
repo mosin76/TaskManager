@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.TaskItem.API.Model.UserModel.Login;
 using System.TaskItem.API.Model.UserModel.SignUp;
 using TaskManagmentAPI.BusinessLogic.UserLogic.Interface;
-using TaskManagmentAPI.SystemLogic.UserSystemLogic.Interface;
 using System.TaskItem.API.Model.UserModel;
 using System.TaskItem.API.Common;
 
@@ -41,6 +39,7 @@ namespace System.TaskItem.API.Controllers
                         Email = registerUser.Email,
                         SecurityStamp = Guid.NewGuid().ToString(),
                         UserName = registerUser.UserName,
+
                     };
                     var result = await _userManageService.CreateUserAsync(user, registerUser.Password);
                     if (result.Succeeded)

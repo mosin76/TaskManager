@@ -6,9 +6,9 @@ namespace System.TaskItem.API.BusinessLogic.TaskLogic.Interface
     public interface ITaskManager
     {
         Task<SprintTaskViewModel> GetAllTaskAsync(TaskSearchModel taskSearchModel);
-        Task<SprintTask?> GetTaskByIdAsync(int id);
-        Task<bool?> UpdateSprintTaskAsync(SprintTask sprintTask);
-        Task<bool?> SaveSprintTaskAsync(SprintTask sprintTask);
+        Task<TaskViewModel?> GetTaskByIdAsync(int id);
+        Task<bool?> UpdateSprintTaskAsync(TaskViewModel sprintTask);
+        Task<bool?> SaveSprintTaskAsync(TaskViewModel sprintTask);
         Task<bool?> DeleteSprintTaskAsync(int id);
     }
 }

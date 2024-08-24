@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.TaskItem.API", "System.TaskItem.API.csproj", "{BAA2BF06-E05C-4B92-84E2-2C956E79A96B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.TaskItem.API", "System.TaskItem.API.csproj", "{BAA2BF06-E05C-4B92-84E2-2C956E79A96B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.TaskItem.TestAPI", "..\System.TaskItem.TestAPI\System.TaskItem.TestAPI.csproj", "{941AF674-10A9-4A06-A12B-B72F37F35C71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{BAA2BF06-E05C-4B92-84E2-2C956E79A96B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAA2BF06-E05C-4B92-84E2-2C956E79A96B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAA2BF06-E05C-4B92-84E2-2C956E79A96B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{941AF674-10A9-4A06-A12B-B72F37F35C71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{941AF674-10A9-4A06-A12B-B72F37F35C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{941AF674-10A9-4A06-A12B-B72F37F35C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{941AF674-10A9-4A06-A12B-B72F37F35C71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

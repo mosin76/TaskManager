@@ -11,6 +11,7 @@ namespace System.TaskItem.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
+    [ValidateAntiForgeryToken]
     public class SprintTasksController : ControllerBase
     {
         private readonly ITaskManager _context;
@@ -20,7 +21,6 @@ namespace System.TaskItem.API.Controllers
             _context = context;
         }
 
-        // GET: api/SprintTasks
         [Route("task/GetTaskBySearch")]
         [HttpPost]
         
@@ -31,7 +31,7 @@ namespace System.TaskItem.API.Controllers
 
         // GET: api/SprintTasks/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<SprintTask>> GetSprintTask(int id)
+        public async Task<ActionResult<TaskViewModel>> GetSprintTask(int id)
         {
             var sprintTask = await _context.GetTaskByIdAsync(id);
 
@@ -43,10 +43,8 @@ namespace System.TaskItem.API.Controllers
             return sprintTask;
         }
 
-        // PUT: api/SprintTasks/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSprintTask(int id, SprintTask sprintTask)
+        public async Task<IActionResult> PutSprintTask(int id, TaskViewModel sprintTask)
         {
             if (id != sprintTask.TaskId)
             {
@@ -59,7 +57,7 @@ namespace System.TaskItem.API.Controllers
 
         
         [HttpPost]
-        public async Task<ActionResult<SprintTask>> PostSprintTask(SprintTask sprintTask)
+        public async Task<ActionResult<SprintTask>> PostSprintTask(TaskViewModel sprintTask)
         {
             var currentUser = HttpContext.User;
             var userid = currentUser.Claims.Where(e => e.Type == "userid");
@@ -73,7 +71,7 @@ namespace System.TaskItem.API.Controllers
             return CreatedAtAction("GetSprintTask", new { id = sprintTask.TaskId }, sprintTask);
         }
 
-        // DELETE: api/SprintTasks/5
+      
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSprintTask(int id)
         {

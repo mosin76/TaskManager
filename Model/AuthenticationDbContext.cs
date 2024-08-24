@@ -14,8 +14,7 @@ namespace System.TaskItem.API.Model
             base.OnModelCreating(builder);
             seedRoles(builder);
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder options) =>
-    options.UseSqlite("DataSource = identityDb; Cache=Shared");
+        
         private static void seedRoles(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IdentityRole>().HasData

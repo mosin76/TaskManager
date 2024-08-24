@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.TaskItem.API.BusinessLogic.TaskLogic.Implementation;
@@ -16,8 +17,8 @@ using TaskManagmentAPI.SystemLogic.UserSystemLogic.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
-builder.Services.AddDbContext<AuthenticationDbContext>();
-builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddDbContext<AuthenticationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("UserConstr")));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("UserConstr")));
 
 //For Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
@@ -84,7 +85,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserManageService, UserManageService>();
 builder.Services.AddScoped<ITaskItemService, TaskItemService>();
 builder.Services.AddScoped<ITaskManager, TaskManager>();
-
+builder.Services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

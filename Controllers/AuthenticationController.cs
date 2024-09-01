@@ -7,11 +7,13 @@ using System.TaskItem.API.Model.UserModel.SignUp;
 using TaskManagmentAPI.BusinessLogic.UserLogic.Interface;
 using System.TaskItem.API.Model.UserModel;
 using System.TaskItem.API.Common;
-
+using Microsoft.AspNetCore.Cors;
 namespace System.TaskItem.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[ValidateAntiForgeryToken]
+    [EnableCors("MyCorsPolicy")]
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserManageService _userManageService;
@@ -30,7 +32,7 @@ namespace System.TaskItem.API.Controllers
                 bool isUserExist = await _userManageService.FindByEmailId(registerUser.Email);
                 if (isUserExist)
                 {
-                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse { Message = TaskConstant.UserAlready, Status = TaskConstant.ErrorMessage });
+                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse { Message = TaskConstant.UserAlready, IsSuccess = false });
                 }
                 else
                 {
@@ -44,17 +46,17 @@ namespace System.TaskItem.API.Controllers
                     var result = await _userManageService.CreateUserAsync(user, registerUser.Password);
                     if (result.Succeeded)
                     {
-                        return StatusCode(StatusCodes.Status201Created, new ApiResponse { Message = TaskConstant.UserCreatedSuccess, Status = TaskConstant.SuccessMessage });
+                        return StatusCode(StatusCodes.Status201Created, new ApiResponse { Message = TaskConstant.UserCreatedSuccess, IsSuccess = true });
                     }
                     else
                     {
-                        return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse { Message = TaskConstant.UserCreationFailed, Status = TaskConstant.ErrorMessage });
+                        return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse { Message = TaskConstant.UserCreationFailed, IsSuccess = false });
                     }
                 }
             }
             else
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse { Message = TaskConstant.UserEmailNotEmpty, Status = TaskConstant.ErrorMessage });
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse { Message = TaskConstant.UserEmailNotEmpty, IsSuccess = false });
             }
 
 

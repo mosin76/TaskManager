@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -21,20 +22,22 @@ namespace TaskManagmentAPI.BusinessLogic.UserLogic.Implementation
         public async Task<ValidateLoginViewModel> Authenticate(string username, string password)
         {
             ValidateLoginViewModel validateLoginViewModel = null;
+            string userName=string.Empty;
             var UserExist = await _userService.FindByNameAsync(username);
             if (UserExist == null)
             {
-                validateLoginViewModel=new ValidateLoginViewModel { IsValidationSuccess = false, Message= "User Does not exists!",Token="" };
+                validateLoginViewModel=new ValidateLoginViewModel { IsValidationSuccess = false, Message= "User Does not exists!",Token="", UserName = userName };
                 return validateLoginViewModel;
             }
             if (UserExist != null && await _userService.CheckPassword(UserExist, password))
             {
-                validateLoginViewModel = new ValidateLoginViewModel { IsValidationSuccess = true, Message = "Login Successfull!", Token = GetToken(UserExist) };
+                userName= !string.IsNullOrEmpty(UserExist.UserName) ? UserExist.UserName :"";
+                validateLoginViewModel = new ValidateLoginViewModel { IsValidationSuccess = true, Message = "Login Successfull!", Token = GetToken(UserExist), UserName= userName };
                 return validateLoginViewModel;
             }
             else
             {
-                validateLoginViewModel = new ValidateLoginViewModel { IsValidationSuccess = false, Message = "User and Password Does not Match!", Token = "" };
+                validateLoginViewModel = new ValidateLoginViewModel { IsValidationSuccess = false, Message = "User and Password Does not Match!", Token = "" , UserName = userName };
                 return validateLoginViewModel;
             }
             

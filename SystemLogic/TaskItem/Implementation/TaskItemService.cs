@@ -3,7 +3,9 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Drawing.Text;
+using System.Linq;
 using System.TaskItem.API.Common;
 using System.TaskItem.API.Model;
 using System.TaskItem.API.Model.ApplicationModel;
@@ -55,20 +57,30 @@ namespace TaskManagmentAPI.SystemLogic.TaskItem.Implementation
 
         private async Task<SprintTaskViewModel> GetAllTaskBySearch(TaskSearchModel taskSearchModel)
         {
+            int pageSize = !string.IsNullOrEmpty(taskSearchModel.PazeSize) ? Convert.ToInt16(taskSearchModel.PazeSize) : 10;
+            int pageNo = taskSearchModel != null && !string.IsNullOrEmpty(taskSearchModel.PageNo) ? Convert.ToInt16(taskSearchModel.PageNo) : 1;
             SprintTaskViewModel searchViewModel=new SprintTaskViewModel();
-            int StatusFilter = GetStatusFlag(taskSearchModel);
+            int statusfilter = !string.IsNullOrEmpty(taskSearchModel.Status) ? Convert.ToInt32(taskSearchModel.Status) : 0;
             if (taskSearchModel != null)
             {
-                searchViewModel = await SearchBy(searchViewModel, taskSearchModel, StatusFilter);
+                searchViewModel = await SearchBy(searchViewModel, taskSearchModel, statusfilter);
                 searchViewModel = OrderBy(searchViewModel, taskSearchModel);
             }
             searchViewModel.Total = searchViewModel.sprintTasks != null ? searchViewModel.sprintTasks.Count : 0;
-            searchViewModel.PageSize = taskSearchModel!=null ? taskSearchModel.PazeSize:10;
-            searchViewModel.PageNo = taskSearchModel != null ? taskSearchModel.PageNo:1;
+            if (searchViewModel.sprintTasks != null)
+                searchViewModel.sprintTasks = searchViewModel.sprintTasks
+                    .Skip((pageNo - 1) * pageSize)
+                    .Take(pageSize).ToList();
+           
+            searchViewModel.PageSize = pageSize;
+            searchViewModel.PageNo = pageNo; 
+            searchViewModel.Success = true;
+           
             return searchViewModel;
         }
         private async Task<SprintTaskViewModel> SearchBy(SprintTaskViewModel searchViewModel,TaskSearchModel taskSearchModel, int StatusFilter)
         {
+           
             if (!string.IsNullOrEmpty(taskSearchModel.SearchFor) && !string.IsNullOrEmpty(taskSearchModel.SearchValue))
             {
                 switch (taskSearchModel.SearchFor.ToLower())
@@ -80,27 +92,28 @@ namespace TaskManagmentAPI.SystemLogic.TaskItem.Implementation
                         searchViewModel = await SearchByDescription(taskSearchModel, StatusFilter);
                         break;
                     default:
-                        searchViewModel = await DefaultSearch(taskSearchModel, StatusFilter);
+                        searchViewModel = await DefaultSearch(taskSearchModel);
                        break;
                 }
 
             }
             else
             {
-                searchViewModel= await DefaultSearch(taskSearchModel, StatusFilter);
+                searchViewModel= await DefaultSearch(taskSearchModel);
             }
             return searchViewModel;
         }
-        private async Task<SprintTaskViewModel> DefaultSearch(TaskSearchModel taskSearchModel, int StatusFilter)
+        private async Task<SprintTaskViewModel> DefaultSearch(TaskSearchModel taskSearchModel)
         {
             SprintTaskViewModel searchTitleViewModel = new SprintTaskViewModel();
-            if(StatusFilter!=0)
+            if(!string.IsNullOrEmpty(taskSearchModel.Status))
             {
-                searchTitleViewModel.sprintTasks=await _context.SprintTask.Where(e => e.Status == StatusFilter).ToListAsync();
+                int statusfilter = Convert.ToInt32(taskSearchModel.Status);
+                searchTitleViewModel.sprintTasks=await _context.SprintTask.Where(e => e.Status == statusfilter && e.UserId== taskSearchModel.userId).ToListAsync();
             }
             else
             {
-                searchTitleViewModel.sprintTasks = await _context.SprintTask.ToListAsync();
+                searchTitleViewModel.sprintTasks = await _context.SprintTask.Where(e=>e.UserId== taskSearchModel.userId).ToListAsync();
             }
             return searchTitleViewModel;
         }
@@ -111,13 +124,17 @@ namespace TaskManagmentAPI.SystemLogic.TaskItem.Implementation
             {
                 if (StatusFilter == 0)
                 {
-                    searchTitleViewModel.sprintTasks = await _context.SprintTask.Where(e => e.Title.Contains(taskSearchModel.SearchValue)).ToListAsync();
+                    searchTitleViewModel.sprintTasks = await _context.SprintTask.Where(e => e.Title.Contains(taskSearchModel.SearchValue) && e.UserId== taskSearchModel.userId).ToListAsync();
                 }
                 else
                 {
-                    searchTitleViewModel.sprintTasks =await _context.SprintTask.Where(e => e.Title.Contains(taskSearchModel.SearchValue) && e.Status == StatusFilter).ToListAsync();
+                    searchTitleViewModel.sprintTasks =await _context.SprintTask.Where(e => e.Title.Contains(taskSearchModel.SearchValue) && e.Status == StatusFilter && e.UserId == taskSearchModel.userId).ToListAsync();
                 }
                 
+            }
+            else
+            {
+                searchTitleViewModel.sprintTasks = await _context.SprintTask.Where(e=>e.UserId== taskSearchModel.userId).ToListAsync();
             }
             return searchTitleViewModel;
         }
@@ -128,13 +145,17 @@ namespace TaskManagmentAPI.SystemLogic.TaskItem.Implementation
             {
                 if (StatusFilter == 0)
                 {
-                    searchTitleViewModel.sprintTasks = await _context.SprintTask.Where(e => e.Description.Contains(taskSearchModel.SearchValue)).ToListAsync();
+                    searchTitleViewModel.sprintTasks = await _context.SprintTask.Where(e => e.Description.Contains(taskSearchModel.SearchValue) && e.UserId == taskSearchModel.userId).ToListAsync();
                 }
                 else
                 {
-                    searchTitleViewModel.sprintTasks = await _context.SprintTask.Where(e => e.Description.Contains(taskSearchModel.SearchValue) && e.Status == StatusFilter).ToListAsync();
+                    searchTitleViewModel.sprintTasks = await _context.SprintTask.Where(e => e.Description.Contains(taskSearchModel.SearchValue) && e.Status == StatusFilter && e.UserId == taskSearchModel.userId).ToListAsync();
                 }
 
+            }
+            else
+            {
+                searchTitleViewModel.sprintTasks = await _context.SprintTask.Where(e => e.UserId == taskSearchModel.userId).ToListAsync();
             }
             return searchTitleViewModel;
         }
@@ -164,10 +185,9 @@ namespace TaskManagmentAPI.SystemLogic.TaskItem.Implementation
         }
         private SprintTaskViewModel OrderByTitle(SprintTaskViewModel searchViewModel,TaskSearchModel taskSearchModel)
         {
-            SprintTaskViewModel searchTitleViewModel = new SprintTaskViewModel();
             if (taskSearchModel != null)
             {
-                switch (!string.IsNullOrEmpty(taskSearchModel.SortBy) ?taskSearchModel.SortBy.ToLower(): TaskConstant.OrderByDesc)
+                switch (!string.IsNullOrEmpty(taskSearchModel.SortOrder) ?taskSearchModel.SortOrder.ToLower(): TaskConstant.OrderByAsc)
                 {
                     case TaskConstant.OrderByDesc:
                         searchViewModel.sprintTasks = searchViewModel.sprintTasks.OrderByDescending(a => a.Title).ToList();
@@ -179,14 +199,13 @@ namespace TaskManagmentAPI.SystemLogic.TaskItem.Implementation
                         searchViewModel.sprintTasks = searchViewModel.sprintTasks.OrderByDescending(a => a.Title).ToList();                        break;
                 }
             }
-            return searchTitleViewModel;
+            return searchViewModel;
         }
         private SprintTaskViewModel OrderByDescription(SprintTaskViewModel searchViewModel, TaskSearchModel taskSearchModel)
         {
-            SprintTaskViewModel searchTitleViewModel = new SprintTaskViewModel();
             if (taskSearchModel != null)
             {
-                switch (!string.IsNullOrEmpty(taskSearchModel.SortBy) ? taskSearchModel.SortBy.ToLower() : TaskConstant.OrderByDesc)
+                switch (!string.IsNullOrEmpty(taskSearchModel.SortOrder) ? taskSearchModel.SortOrder.ToLower() : TaskConstant.OrderByDesc)
                 {
                     case TaskConstant.OrderByDesc:
                         searchViewModel.sprintTasks = searchViewModel.sprintTasks.OrderByDescending(a => a.Description).ToList();
@@ -198,7 +217,7 @@ namespace TaskManagmentAPI.SystemLogic.TaskItem.Implementation
                         searchViewModel.sprintTasks = searchViewModel.sprintTasks.OrderByDescending(a => a.Description).ToList(); break;
                 }
             }
-            return searchTitleViewModel;
+            return searchViewModel;
         }
         private int GetStatusFlag(TaskSearchModel taskSearchModel) 
         {

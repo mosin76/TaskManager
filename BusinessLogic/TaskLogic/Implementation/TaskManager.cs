@@ -48,15 +48,16 @@ namespace System.TaskItem.API.BusinessLogic.TaskLogic.Implementation
                 taskViewModel.Status = sprintTask.Status;
                 taskViewModel.UserId = sprintTask.UserId;
                 taskViewModel.Description = sprintTask.Description;
-                taskViewModel.StartDate = sprintTask.StartDate != null ? sprintTask.StartDate.Value.ToString("MM-dd-yyyy") : "";
-                taskViewModel.EndDate= sprintTask.EndDate != null ? sprintTask.EndDate.Value.ToString("MM-dd-yyyy") : "";
-                taskViewModel.DueDate = sprintTask.DueDate != null ? sprintTask.DueDate.Value.ToString("MM-dd-yyyy") : "";
+                taskViewModel.StartDate = sprintTask.StartDate != null ? sprintTask.StartDate.Value.ToString("dd-MM-yyyy") : "";
+                taskViewModel.EndDate= sprintTask.EndDate != null ? sprintTask.EndDate.Value.ToString("dd-MM-yyyy") : "";
+                //taskViewModel.DueDate = sprintTask.DueDate != null ? sprintTask.DueDate.Value.ToString("MM-dd-yyyy") : "";
             }
             return taskViewModel;
         }
         private SprintTask GetMappedTaskSprint(TaskViewModel? taskViewModel)
         {
             SprintTask sprintTask = new SprintTask();
+            var str = DateOnly.ParseExact(taskViewModel.StartDate, "dd-MM-yyyy", null);
             if (taskViewModel != null)
             {
                 sprintTask.TaskId = taskViewModel.TaskId;
@@ -64,9 +65,9 @@ namespace System.TaskItem.API.BusinessLogic.TaskLogic.Implementation
                 sprintTask.Status = taskViewModel.Status;
                 sprintTask.UserId = taskViewModel.UserId;
                 sprintTask.Description = taskViewModel.Description;
-                sprintTask.StartDate = taskViewModel.StartDate != null ? DateOnly.Parse(taskViewModel.StartDate) : null;
-                sprintTask.EndDate = taskViewModel.EndDate != null ? DateOnly.Parse(taskViewModel.EndDate) : null;
-                sprintTask.DueDate = taskViewModel.DueDate != null ? DateOnly.Parse(taskViewModel.DueDate) : null;
+                sprintTask.StartDate = taskViewModel.StartDate != null ? DateOnly.ParseExact(taskViewModel.StartDate, "dd-MM-yyyy", null) : null;
+                sprintTask.EndDate = taskViewModel.EndDate != null ? DateOnly.ParseExact(taskViewModel.EndDate, "dd-MM-yyyy", null) : null;
+               // sprintTask.DueDate = taskViewModel.DueDate != null ? DateOnly.Parse(taskViewModel.DueDate) : null;
             }
             return sprintTask;
         }

@@ -8,8 +8,8 @@
         public string? SortBy { get; set; }
         public string? SortOrder { get; set; }
         public string? userId {  get; set; }
-        public int? PageNo { get; set; }
-        public int? PazeSize { get; set; }
-        public int? TotalRecord { get; set; }
+        public string? PageNo { get; set; }
+        public string? PazeSize { get; set; }
+        public string? TotalRecord { get; set; }
     }
 }
